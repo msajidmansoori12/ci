@@ -434,15 +434,23 @@ jobs:
           echo $external_ip;
           echo "UI_URL=https://$(minikube ip)" >>$GITHUB_ENV
 
-      - name: Run login tests
-        uses: cypress-io/github-action@v6
-        env:
-          CYPRESS_user: admin
-          CYPRESS_pass: password
-          CYPRESS_baseUrl: "${{ env.UI_URL }}"
-        with:
-          working-directory: tackle-ui-tests
-          spec: "cypress/e2e/tests/login.test.ts"
+      # - name: Run login tests
+      #   uses: cypress-io/github-action@v6
+      #   env:
+      #     CYPRESS_user: admin
+      #     CYPRESS_pass: password
+      #     CYPRESS_baseUrl: "${{ env.UI_URL }}"
+      #   with:
+      #     working-directory: tackle-ui-tests
+      #     spec: "cypress/e2e/tests/login.test.ts"
+
+      - name: Install NPM
+        run: npm install .
+        working-directory: tackle-ui-tests
+
+      - name: Run cypress login test
+        run: npx cypress run --spec "cypress/e2e/tests/login.test.ts" --env user="admin",pass="password" --config baseUrl=${{ env.UI_URL }}
+        working-directory: tackle-ui-tests
 
       - name: Run UI tests (${{ inputs.ui_test_tags }})
         uses: cypress-io/github-action@v6
